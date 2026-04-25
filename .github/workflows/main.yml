@@ -1,0 +1,18 @@
+name: Lajmet Auto
+on:
+  schedule:
+    - cron: '*/30 * * * *' # Kjo e bën të punojë çdo 30 minuta
+  workflow_dispatch: # Kjo të lejon ta ndezësh vetë kur të duash
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm install axios cheerio @supabase/supabase-js @iamtraction/google-translate
+      - name: Run Scraper
+        run: node bot.js
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
