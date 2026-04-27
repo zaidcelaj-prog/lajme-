@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="dark" lang="sq">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LajmeCrypto.al - Lajme Kripto në Shqip</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6-72,400;500;600;700;800;900&family=Work+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+    darkMode: "class",
+    theme: { extend: {
+        colors: {
+            "background":"#051424","surface-container":"#122131","surface-container-low":"#0d1c2d",
+            "surface-container-high":"#1c2b3c","secondary-container":"#0566d9",
+            "on-secondary-container":"#e6ecff","on-surface":"#d4e4fa","on-surface-variant":"#c7c6cc",
+            "tertiary":"#ffb95f","secondary":"#adc6ff"
+        },
+        fontFamily: { "h1":["Newsreader"],"h2":["Newsreader"],"h3":["Newsreader"],"ui-label":["Work Sans"],"body-lg":["Work Sans"],"body-md":["Work Sans"],"data-mono":["Space Grotesk"] },
+        spacing: { "stack-lg":"32px","stack-md":"16px","stack-sm":"8px","gutter":"24px" }
+    }}
+}
+</script>
+<style>
+body{background:#051424;color:#d4e4fa;min-height:100dvh;}
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}
+.pulse-dot{animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.animate-marquee{animation:marquee 35s linear infinite;display:inline-flex;min-width:200%;}
+.no-scrollbar::-webkit-scrollbar{display:none;} .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}
+.news-card{cursor:pointer;transition:border-color .2s;}
+.news-card:hover{border-color:#3b82f6!important;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skeleton{background:linear-gradient(90deg,#122131 25%,#1c2b3c 50%,#122131 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:.25rem;}
+.cat-btn{border-bottom:2px solid transparent;transition:all .2s;}
+.cat-btn.active{color:#3b82f6;border-bottom:2px solid #3b82f6;}
+</style>
+</head>
+<body class="font-body-md">
+
+<!-- Ticker -->
+<div class="bg-secondary-container text-on-secondary-container py-2 overflow-hidden whitespace-nowrap sticky top-0 z-[60]">
+  <div class="animate-marquee" id="tickerInner">
+    <span class="inline-flex items-center gap-2 px-8"><span class="w-2 h-2 rounded-full bg-yellow-400 pulse-dot inline-block"></span><span class="font-data-mono text-xs uppercase tracking-widest">Duke ngarkuar lajmet live...</span></span>
+    <span class="inline-flex items-center gap-2 px-8"><span class="w-2 h-2 rounded-full bg-yellow-400 pulse-dot inline-block"></span><span class="font-data-mono text-xs uppercase tracking-widest">BTC • ETH • SOL • BNB • XRP</span></span>
+    <span class="inline-flex items-center gap-2 px-8"><span class="w-2 h-2 rounded-full bg-yellow-400 pulse-dot inline-block"></span><span class="font-data-mono text-xs uppercase tracking-widest">LajmeCrypto.al — Lajme Kripto 24/7</span></span>
+    <span class="inline-flex items-center gap-2 px-8"><span class="w-2 h-2 rounded-full bg-yellow-400 pulse-dot inline-block"></span><span class="font-data-mono text-xs uppercase tracking-widest">Duke ngarkuar lajmet live...</span></span>
+    <span class="inline-flex items-center gap-2 px-8"><span class="w-2 h-2 rounded-full bg-yellow-400 pulse-dot inline-block"></span><span class="font-data-mono text-xs uppercase tracking-widest">BTC • ETH • SOL • BNB • XRP</span></span>
+    <span class="inline-flex items-center gap-2 px-8"><span class="w-2 h-2 rounded-full bg-yellow-400 pulse-dot inline-block"></span><span class="font-data-mono text-xs uppercase tracking-widest">LajmeCrypto.al — Lajme Kripto 24/7</span></span>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="bg-[#0a0e1a] border-b border-[#1e293b] h-16 flex justify-between items-center w-full px-4 sticky top-[36px] z-50">
+  <div class="flex items-center gap-4">
+    <span class="font-newsreader font-black text-2xl text-white tracking-widest">LC</span>
+    <span class="hidden md:block font-newsreader text-lg tracking-tight uppercase text-blue-500">LajmeCrypto.al</span>
+  </div>
+  <div class="hidden sm:flex items-center gap-2 bg-[#0d1c2d] border border-[#1e293b] px-3 py-1.5 rounded-lg w-full max-w-md mx-4">
+    <span class="material-symbols-outlined text-slate-400 text-sm">search</span>
+    <input id="searchInput" class="bg-transparent border-none focus:ring-0 text-sm w-full outline-none text-slate-300 placeholder-slate-500" placeholder="Kërko lajme, monedha..." type="text"/>
+  </div>
+  <div class="flex items-center gap-2 text-yellow-400 font-data-mono text-sm px-3 py-1 border border-yellow-400/20 rounded bg-yellow-400/5 whitespace-nowrap">
+    <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">currency_bitcoin</span>
+    <span id="btcPrice">...</span>
+  </div>
+</header>
+
+<!-- Category Nav -->
+<nav class="bg-[#051424] border-b border-[#1e293b] sticky top-[100px] z-40 overflow-x-auto no-scrollbar">
+  <div class="max-w-7xl mx-auto flex items-center px-4 h-12 gap-6 md:gap-8">
+    <button class="cat-btn active text-blue-500 font-ui-label text-sm h-full flex items-center whitespace-nowrap" data-cat="all" onclick="filterCat(this,'all')">Të gjitha</button>
+    <button class="cat-btn text-slate-400 hover:text-white font-ui-label text-sm h-full flex items-center whitespace-nowrap" data-cat="bitcoin" onclick="filterCat(this,'bitcoin')">Bitcoin</button>
+    <button class="cat-btn text-slate-400 hover:text-white font-ui-label text-sm h-full flex items-center whitespace-nowrap" data-cat="ethereum" onclick="filterCat(this,'ethereum')">Ethereum</button>
+    <button class="cat-btn text-slate-400 hover:text-white font-ui-label text-sm h-full flex items-center whitespace-nowrap" data-cat="altcoin" onclick="filterCat(this,'altcoin')">Altcoins</button>
+    <button class="cat-btn text-slate-400 hover:text-white font-ui-label text-sm h-full flex items-center whitespace-nowrap" data-cat="defi" onclick="filterCat(this,'defi')">DeFi</button>
+    <button class="cat-btn text-slate-400 hover:text-white font-ui-label text-sm h-full flex items-center whitespace-nowrap" data-cat="regulation" onclick="filterCat(this,'regulation')">Rregullimi</button>
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="max-w-7xl mx-auto px-4 py-8">
+  <div id="featuredSection" class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
+    <div class="md:col-span-8 skeleton" style="height:340px"></div>
+    <div class="md:col-span-4 skeleton" style="height:340px"></div>
+  </div>
+  <div id="newsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="skeleton" style="height:320px"></div>
+    <div class="skeleton" style="height:320px"></div>
+    <div class="skeleton" style="height:320px"></div>
+  </div>
+  <div class="mt-8 flex justify-center">
+    <button id="loadMoreBtn" onclick="loadMore()" class="hidden bg-[#1c2b3c] border border-[#1e293b] text-white font-ui-label px-12 py-4 rounded hover:bg-slate-800 transition-all uppercase tracking-widest text-xs flex items-center gap-3 group">
+      Ngarko më shumë lajme
+      <span class="material-symbols-outlined group-hover:translate-y-1 transition-transform">expand_more</span>
+    </button>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-[#0a0e1a] border-t border-[#1e293b] py-8 mb-16 md:mb-0">
+  <div class="max-w-7xl mx-auto px-4 flex flex-col items-center gap-4">
+    <span class="font-newsreader font-black text-2xl text-white tracking-widest">LajmeCrypto.al</span>
+    <div class="flex gap-8">
+      <a class="text-xs uppercase tracking-widest text-slate-500 hover:text-blue-400 transition-colors" href="#">Rreth nesh</a>
+      <a class="text-xs uppercase tracking-widest text-slate-500 hover:text-blue-400 transition-colors" href="#">Termat</a>
+      <a class="text-xs uppercase tracking-widest text-slate-500 hover:text-blue-400 transition-colors" href="#">Privatësia</a>
+    </div>
+    <p class="text-xs uppercase tracking-widest text-slate-600 text-center">© 2025 LajmeCrypto.al • Të dhënat nga CryptoCompare</p>
+  </div>
+</footer>
+
+<!-- Bottom Nav Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 bg-[#0a0e1a]/95 backdrop-blur-md border-t border-[#1e293b]">
+  <a class="flex flex-col items-center text-blue-500" href="#"><span class="material-symbols-outlined">newspaper</span><span class="text-[10px] uppercase tracking-tighter">Lajmet</span></a>
+  <a class="flex flex-col items-center text-slate-500" href="https://www.coingecko.com" target="_blank"><span class="material-symbols-outlined">show_chart</span><span class="text-[10px] uppercase tracking-tighter">Marketet</span></a>
+  <a class="flex flex-col items-center text-slate-500" href="#"><span class="material-symbols-outlined">account_balance_wallet</span><span class="text-[10px] uppercase tracking-tighter">Portofoli</span></a>
+  <a class="flex flex-col items-center text-slate-500" href="#"><span class="material-symbols-outlined">settings</span><span class="text-[10px] uppercase tracking-tighter">Cilësimet</span></a>
+</nav>
+
+<!-- FAB -->
+<div class="fixed bottom-20 right-6 z-40 md:bottom-8">
+  <button onclick="window.open('https://www.coingecko.com','_blank')" class="bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all">
+    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">trending_up</span>
+  </button>
+</div>
+
+<script>
+let allNews = [], filtered = [], page = 0;
+const PER_PAGE = 9;
+
+function timeAgo(ts) {
+  const d = Math.floor(Date.now()/1000 - ts);
+  if(d<60) return d+'s më parë';
+  if(d<3600) return Math.floor(d/60)+' min më parë';
+  if(d<86400) return Math.floor(d/3600)+' orë më parë';
+  return Math.floor(d/86400)+' ditë më parë';
+}
+
+function getCat(cats) {
+  if(!cats) return {label:'KRIPTO',cls:'text-slate-300 bg-slate-800'};
+  const c = cats.toUpperCase();
+  if(c.includes('BTC')||c.includes('BITCOIN')) return {label:'BITCOIN',cls:'text-yellow-400 bg-yellow-400/10'};
+  if(c.includes('ETH')||c.includes('ETHEREUM')) return {label:'ETHEREUM',cls:'text-blue-400 bg-blue-400/10'};
+  if(c.includes('SOL')) return {label:'SOLANA',cls:'text-purple-400 bg-purple-400/10'};
+  if(c.includes('DEFI')) return {label:'DEFI',cls:'text-green-400 bg-green-400/10'};
+  if(c.includes('REGUL')||c.includes('SEC')||c.includes('LAW')) return {label:'RREGULLIMI',cls:'text-red-400 bg-red-400/10'};
+  if(c.includes('NFT')) return {label:'NFT',cls:'text-pink-400 bg-pink-400/10'};
+  if(c.includes('XRP')||c.includes('RIPPLE')) return {label:'XRP',cls:'text-cyan-400 bg-cyan-400/10'};
+  return {label:'KRIPTO',cls:'text-slate-300 bg-slate-800'};
+}
+
+const FALLBACK = 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&q=80';
+const FALLBACK2 = 'https://images.unsplash.com/photo-1621504450181-5d356f61d307?w=600&q=80';
+
+function renderFeatured(news) {
+  if(!news.length){ document.getElementById('featuredSection').innerHTML=''; return; }
+  const a = news[0], b = news[1]||news[0];
+  const ca = getCat(a.categories), cb = getCat(b.categories);
+  document.getElementById('featuredSection').innerHTML = `
+    <article onclick="window.open('${a.url}','_blank')" class="news-card md:col-span-8 group relative overflow-hidden bg-[#122131] border border-[#1e293b] rounded-lg">
+      <div class="aspect-video relative overflow-hidden">
+        <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+             src="${a.imageurl||FALLBACK}" onerror="this.src='${FALLBACK}'" alt=""/>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#051424] via-[#051424]/40 to-transparent"></div>
+      </div>
+      <div class="absolute bottom-0 p-6 md:p-8 w-full">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="font-data-mono text-xs rounded uppercase px-2 py-0.5 ${ca.cls}">${ca.label}</span>
+          <span class="text-slate-400 text-xs">${timeAgo(a.published_on)}</span>
+          <span class="text-slate-500 text-xs hidden md:inline">• ${a.source_info?.name||''}</span>
+        </div>
+        <h2 class="font-newsreader text-xl md:text-3xl text-white mb-3 group-hover:text-blue-400 transition-colors line-clamp-2">${a.title}</h2>
+        <p class="text-slate-300 text-sm line-clamp-2 max-w-2xl mb-4 hidden md:block">${(a.body||'').substring(0,160)}...</p>
+        <div class="inline-flex items-center gap-2 text-white text-xs border border-white/20 px-4 py-2 rounded-full hover:bg-white/10 transition-colors">
+          <span class="material-symbols-outlined text-sm">open_in_new</span> Lexo artikullin
+        </div>
+      </div>
+    </article>
+    <article onclick="window.open('${b.url}','_blank')" class="news-card md:col-span-4 flex flex-col bg-[#122131] border border-[#1e293b] rounded-lg group overflow-hidden">
+      <div class="h-48 relative overflow-hidden">
+        <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+             src="${b.imageurl||FALLBACK2}" onerror="this.src='${FALLBACK2}'" alt=""/>
+        <div class="absolute top-3 right-3">
+          <span class="font-data-mono text-xs rounded uppercase px-2 py-0.5 ${cb.cls}">${cb.label}</span>
+        </div>
+      </div>
+      <div class="p-5 flex-grow flex flex-col">
+        <span class="text-slate-400 text-xs mb-2">${timeAgo(b.published_on)}</span>
+        <h3 class="font-newsreader text-xl text-white mb-4 group-hover:text-blue-400 transition-colors line-clamp-3">${b.title}</h3>
+        <div class="mt-auto text-blue-400 text-xs flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">open_in_new</span> Lexo më shumë
+        </div>
+      </div>
+    </article>`;
+}
+
+function renderGrid() {
+  const slice = filtered.slice(2, 2 + (page+1)*PER_PAGE);
+  const FALLBACK3 = 'https://images.unsplash.com/photo-1642104704074-907c0698c1b1?w=600&q=80';
+  document.getElementById('newsGrid').innerHTML = slice.length
+    ? slice.map(item => {
+        const cat = getCat(item.categories);
+        return `
+        <article onclick="window.open('${item.url}','_blank')" class="news-card bg-[#122131] border border-[#1e293b] flex flex-col rounded-lg overflow-hidden group">
+          <div class="h-44 overflow-hidden">
+            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                 src="${item.imageurl||FALLBACK3}" onerror="this.src='${FALLBACK3}'" alt=""/>
+          </div>
+          <div class="p-5 flex flex-col flex-grow">
+            <div class="flex justify-between items-center mb-3">
+              <span class="font-data-mono text-[10px] uppercase px-2 py-1 rounded ${cat.cls}">${cat.label}</span>
+              <span class="text-slate-500 text-[10px]">${timeAgo(item.published_on)}</span>
+            </div>
+            <h4 class="font-newsreader text-lg text-[#d4e4fa] mb-3 leading-tight line-clamp-3 group-hover:text-blue-400 transition-colors">${item.title}</h4>
+            <div class="mt-auto pt-3 flex justify-between items-center border-t border-[#1e293b]">
+              <span class="text-blue-400 text-xs flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">open_in_new</span> Lexo
+              </span>
+              <span class="text-slate-600 text-[10px]">${item.source_info?.name||'CryptoNews'}</span>
+            </div>
+          </div>
+        </article>`; }).join('')
+    : `<div class="col-span-3 text-center text-slate-500 py-16">
+         <span class="material-symbols-outlined text-4xl block mb-3">search_off</span>
+         Nuk u gjetën lajme për këtë kategori.
+       </div>`;
+
+  const hasMore = 2 + (page+1)*PER_PAGE < filtered.length;
+  document.getElementById('loadMoreBtn').classList.toggle('hidden', !hasMore);
+}
+
+function filterCat(btn, cat) {
+  document.querySelectorAll('.cat-btn').forEach(b => {
+    b.classList.remove('active','text-blue-500');
+    b.classList.add('text-slate-400');
+  });
+  btn.classList.add('active','text-blue-500');
+  btn.classList.remove('text-slate-400');
+  page = 0;
+  filtered = cat==='all' ? [...allNews] : allNews.filter(n => {
+    const c = (n.categories||'').toLowerCase();
+    const t = (n.title||'').toLowerCase();
+    return c.includes(cat)||t.includes(cat);
+  });
+  renderFeatured(filtered);
+  renderGrid();
+}
+
+function loadMore() { page++; renderGrid(); }
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase().trim();
+  page = 0;
+  filtered = !q ? [...allNews] : allNews.filter(n =>
+    (n.title||'').toLowerCase().includes(q)||(n.body||'').toLowerCase().includes(q)
+  );
+  renderFeatured(filtered);
+  renderGrid();
+});
+
+async function fetchNews() {
+  try {
+    const r = await fetch('https://min-api.cryptocompare.com/data/v2/news/?lang=EN&sortOrder=latest');
+    const d = await r.json();
+    if(d.Data?.length) {
+      allNews = d.Data;
+      filtered = [...allNews];
+      // update ticker
+      const inner = document.getElementById('tickerInner');
+      const headlines = allNews.slice(0,6).map(n=>n.title);
+      inner.innerHTML = headlines.concat(headlines).map(h=>
+        `<span class="inline-flex items-center gap-2 px-8"><span class="w-2 h-2 rounded-full bg-yellow-400 pulse-dot inline-block"></span><span class="font-data-mono text-xs uppercase tracking-widest">${h}</span></span>`
+      ).join('');
+      renderFeatured(filtered);
+      renderGrid();
+    }
+  } catch(e) {
+    document.getElementById('featuredSection').innerHTML =
+      `<div class="col-span-12 text-center text-slate-500 py-20">
+         <span class="material-symbols-outlined text-5xl block mb-4">wifi_off</span>
+         Nuk mund të ngarkohen lajmet. Kontrollo lidhjen tënde.
+       </div>`;
+  }
+}
+
+async function fetchBTC() {
+  try {
+    const r = await fetch('https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD');
+    const d = await r.json();
+    if(d.USD) document.getElementById('btcPrice').textContent = '$'+d.USD.toLocaleString('en-US',{maximumFractionDigits:0});
+  } catch(e){}
+}
+
+fetchNews();
+fetchBTC();
+setInterval(fetchBTC, 60000);
+setInterval(fetchNews, 300000);
+</script>
+</body>
+</html>
